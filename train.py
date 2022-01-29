@@ -6,6 +6,7 @@ import pickle
 import argparse
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 
 import utils
 import tflib as lib
@@ -93,20 +94,20 @@ with open(os.path.join(args.output_dir, 'charmap_inv.pickle'), 'wb') as f:
     
 print("Number of unique characters in dataset: {}".format(len(charmap)))
 
-real_inputs_discrete = tf.placeholder(tf.int32, shape=[args.batch_size, args.seq_length])
+real_inputs_discrete = tf.compat.v1.placeholder(tf.int32, shape=[args.batch_size, args.seq_length])
 real_inputs = tf.one_hot(real_inputs_discrete, len(charmap))
 
 fake_inputs = models.Generator(args.batch_size, args.seq_length, args.layer_dim, len(charmap))
-fake_inputs_discrete = tf.argmax(fake_inputs, fake_inputs.get_shape().ndims-1)
+fake_inputs_discrete = tf.argmax(input=fake_inputs, axis=fake_inputs.get_shape().ndims-1)
 
 disc_real = models.Discriminator(real_inputs, args.seq_length, args.layer_dim, len(charmap))
 disc_fake = models.Discriminator(fake_inputs, args.seq_length, args.layer_dim, len(charmap))
 
-disc_cost = tf.reduce_mean(disc_fake) - tf.reduce_mean(disc_real)
-gen_cost = -tf.reduce_mean(disc_fake)
+disc_cost = tf.reduce_mean(input_tensor=disc_fake) - tf.reduce_mean(input_tensor=disc_real)
+gen_cost = -tf.reduce_mean(input_tensor=disc_fake)
 
 # WGAN lipschitz-penalty
-alpha = tf.random_uniform(
+alpha = tf.random.uniform(
     shape=[args.batch_size,1,1],
     minval=0.,
     maxval=1.
@@ -114,16 +115,16 @@ alpha = tf.random_uniform(
 
 differences = fake_inputs - real_inputs
 interpolates = real_inputs + (alpha*differences)
-gradients = tf.gradients(models.Discriminator(interpolates, args.seq_length, args.layer_dim, len(charmap)), [interpolates])[0]
-slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), reduction_indices=[1,2]))
-gradient_penalty = tf.reduce_mean((slopes-1.)**2)
+gradients = tf.gradients(ys=models.Discriminator(interpolates, args.seq_length, args.layer_dim, len(charmap)), xs=[interpolates])[0]
+slopes = tf.sqrt(tf.reduce_sum(input_tensor=tf.square(gradients), axis=[1,2]))
+gradient_penalty = tf.reduce_mean(input_tensor=(slopes-1.)**2)
 disc_cost += args.lamb * gradient_penalty
 
 gen_params = lib.params_with_name('Generator')
 disc_params = lib.params_with_name('Discriminator')
 
-gen_train_op = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5, beta2=0.9).minimize(gen_cost, var_list=gen_params)
-disc_train_op = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5, beta2=0.9).minimize(disc_cost, var_list=disc_params)
+gen_train_op = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5, beta2=0.9).minimize(gen_cost, var_list=gen_params)
+disc_train_op = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5, beta2=0.9).minimize(disc_cost, var_list=disc_params)
 
 # Dataset iterator
 def inf_train_gen():
@@ -146,7 +147,7 @@ true_char_ngram_lms = [utils.NgramLanguageModel(i+1, lines, tokenize=False) for 
 
 
 # TensorFlow Session
-with tf.Session() as session:
+with tf.compat.v1.Session() as session:
 
     # Time stamp
     localtime = time.asctime( time.localtime(time.time()) )
@@ -154,7 +155,7 @@ with tf.Session() as session:
     print("Local current time :", localtime)
     
     # Start TensorFlow session...
-    session.run(tf.global_variables_initializer())
+    session.run(tf.compat.v1.global_variables_initializer())
 
     def generate_samples():
         samples = session.run(fake_inputs)
@@ -205,7 +206,7 @@ with tf.Session() as session:
                     f.write(s + "\n")
 
         if iteration % args.save_every == 0 and iteration > 0:
-            model_saver = tf.train.Saver()
+            model_saver = tf.compat.v1.train.Saver()
             model_saver.save(session, os.path.join(args.output_dir, 'checkpoints', 'checkpoint_{}.ckpt').format(iteration))
             print("{} / {} ({}%)".format(iteration, args.iters, iteration/args.iters*100.0 ))
 

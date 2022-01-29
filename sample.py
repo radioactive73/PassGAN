@@ -5,6 +5,7 @@ import pickle
 import argparse
 import tensorflow as tf
 import numpy as np
+tf.compat.v1.disable_eager_execution()
 
 # Files
 import tflib as lib
@@ -93,7 +94,7 @@ with open(os.path.join(args.input_dir, 'charmap_inv.pickle'), 'rb') as f:
     
 fake_inputs = models.Generator(args.batch_size, args.seq_length, args.layer_dim, len(charmap))
 
-with tf.Session() as session:
+with tf.compat.v1.Session() as session:
 
     def generate_samples():
         samples = session.run(fake_inputs)
@@ -112,7 +113,7 @@ with tf.Session() as session:
                     s = "".join(s).replace('`', '')
                     f.write(s + "\n")
 
-    saver = tf.train.Saver()
+    saver = tf.compat.v1.train.Saver()
     saver.restore(session, args.checkpoint)
 
     samples = []

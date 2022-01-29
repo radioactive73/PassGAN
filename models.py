@@ -47,8 +47,8 @@ def softmax(logits, num_classes):
         tf.nn.softmax(
             tf.reshape(logits, [-1, num_classes])
         ),
-        tf.shape(logits)
+        tf.shape(input=logits)
     )
 
 def make_noise(shape):
-    return tf.random_normal(shape)
+    return tf.random.normal(shape)

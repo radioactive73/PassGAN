@@ -89,7 +89,7 @@ def load_dataset(path, max_length, tokenize=False, max_vocab_size=2048):
     
     lines = []
 
-    with open(path, 'r') as f:
+    with open(path, 'rb') as f:
         for line in f:
             line = line[:-1]
             if tokenize:

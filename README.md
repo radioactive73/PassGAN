@@ -1,7 +1,7 @@
 # PassGAN
 
 
-This repository is updated version of [@brannondorsey/PassGAN](https://github.com/brannondorsey/PassGAN) for Python 3 & TensorFlow 1.13, contains code for the [_PassGAN: A Deep Learning Approach for Password Guessing_](https://arxiv.org/abs/1709.00440) paper. 
+This repository is an updated version of [@brannondorsey/PassGAN](https://github.com/brannondorsey/PassGAN) and [@d4ichi/PassGAN](https://github.com/d4ichi/PassGAN) for Python 3.7 & TensorFlow 2.5.2 (using v1 compatibility), contains code for the [_PassGAN: A Deep Learning Approach for Password Guessing_](https://arxiv.org/abs/1709.00440) paper. Works with CUDA 11.2 and cuDNN 8.1
 
 The model from PassGAN is taken from [_Improved Training of Wasserstein GANs_](https://arxiv.org/abs/1704.00028) and it is assumed that the authors of PassGAN used the [improved_wgan_training](https://github.com/igul222/improved_wgan_training) tensorflow implementation in their work. 
 
@@ -63,6 +63,6 @@ This code is released under an [MIT License](https://github.com/igul222/improved
 
 The credit for the code in this repository goes to [@igul222](https://github.com/igul222) for his work on the [improved_wgan_training](https://github.com/igul222/improved_wgan_training) and [@brannondorsey](https://github.com/brannondorsey) for specializing it in the PassGAN paper.
 
-This is updated version for Python 3 / TensorFlow 1.13 of their work.
+This is an updated version of their work for Python 3.7 / TensorFlow 2.5.2
 
 The PassGAN [research and paper](https://arxiv.org/abs/1709.00440) was published by Briland Hitaj, Paolo Gasti, Giuseppe Ateniese, Fernando Perez-Cruz.
